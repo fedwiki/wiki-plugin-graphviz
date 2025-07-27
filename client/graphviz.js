@@ -6,11 +6,43 @@ let drawInitialized, draw;
     const viz = await instance();
     draw = function draw(dot) {
       const svg = viz.renderSVGElement(dot);
+      svg.aspectData = () => graphviz2aspect(viz.renderJSON(dot));
       svg.style.maxWidth = "100%";
       svg.style.height = "auto";
       return svg;
     }
     return draw;
+  }
+
+  function graphviz2aspect(json) {
+    const graph = {
+      nodes: [],
+      rels: []
+    }
+    function addNode(type, props={}){
+      const obj = {type, in:[], out:[], props};
+      graph.nodes.push(obj);
+      return this.nodes.length-1;
+    }
+    function addUniqNode(type, props={}) {
+      const nid = graph.nodes.findIndex(node => node.type == type && node.props?.name == props?.name)
+      return nid >= 0 ? nid : this.addNode(type, props)
+    }
+    function addRel(type, from, to, props={}) {
+      if (from == null || to == null) return null
+      const obj = {type, from, to, props};
+      graph.rels.push(obj);
+      const rid = this.rels.length-1;
+      graph.nodes[from].out.push(rid)
+      graph.nodes[to].in.push(rid);
+      return rid;
+    }
+
+    return {
+      name: '',
+      graph,
+      json
+    };
   }
 
   function expand(text) {
@@ -486,6 +518,9 @@ ${item.dot??''}`
           }
         }
       }
+      const itemEl = $item.get(0);
+      itemEl.classList.add('aspect-source');
+      itemEl.aspectData = () => svg.aspectData();
       svg.addEventListener("click", click)
       diagram.append(svg)
     } catch (err) {
