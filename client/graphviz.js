@@ -22,27 +22,29 @@ let drawInitialized, draw;
     function addNode(type, props={}){
       const obj = {type, in:[], out:[], props};
       graph.nodes.push(obj);
-      return this.nodes.length-1;
-    }
-    function addUniqNode(type, props={}) {
-      const nid = graph.nodes.findIndex(node => node.type == type && node.props?.name == props?.name)
-      return nid >= 0 ? nid : this.addNode(type, props)
     }
     function addRel(type, from, to, props={}) {
       if (from == null || to == null) return null
       const obj = {type, from, to, props};
       graph.rels.push(obj);
-      const rid = this.rels.length-1;
+      const rid = graph.rels.length-1;
       graph.nodes[from].out.push(rid)
       graph.nodes[to].in.push(rid);
-      return rid;
+    }
+    for (const obj of json.objects) {
+      const name = obj.label && obj.label !== '\\N' ?
+        obj.label :
+        obj.name
+      addNode('Node',{name})
+    }
+    for (const edge of json.edges) {
+      addRel(edge.label||'', edge.tail, edge.head, {})
     }
 
-    return {
-      name: '',
-      graph,
-      json
-    };
+    const name = json.name && json.name !== '%1' ?
+        json.name :
+        'graphviz'
+    return [{name,graph,json}];
   }
 
   function expand(text) {
@@ -459,7 +461,7 @@ ${item.dot??''}`
 
     $item.on('click', event => {
       const {target} = event
-      const {action} = (target.closest("a")||{}).dataset
+      const action = (target.closest("a")||{}).dataset?.action
 
       if (!action) {
         return
