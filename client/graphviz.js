@@ -19,9 +19,12 @@ let drawInitialized, draw;
       nodes: [],
       rels: []
     }
+    const nids = new Map() // their _gvid => our nid
+
     function addNode(type, props={}){
       const obj = {type, in:[], out:[], props};
       graph.nodes.push(obj);
+      return graph.nodes.length-1
     }
     function addRel(type, from, to, props={}) {
       if (from == null || to == null) return null
@@ -32,13 +35,18 @@ let drawInitialized, draw;
       graph.nodes[to].in.push(rid);
     }
     for (const obj of json.objects) {
-      const name = obj.label && obj.label !== '\\N' ?
+      if(obj.name.match(/^(cluster.*)|(%\d+)$/)) continue
+      const props = {}
+      props.name = obj.label && obj.label !== '\\N' ?
         obj.label :
         obj.name
-      addNode('Node',{name})
+      if(obj.fillcolor)
+        props.color = obj.fillcolor
+      const nid = addNode(obj.type||'', props)
+      nids.set(obj._gvid, nid)
     }
     for (const edge of json.edges) {
-      addRel(edge.label||'', edge.tail, edge.head, {})
+      addRel(edge.label||'', nids.get(edge.tail), nids.get(edge.head), {})
     }
 
     const name = json.name && json.name !== '%1' ?
