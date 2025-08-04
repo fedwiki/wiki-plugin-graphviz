@@ -35,7 +35,7 @@ let drawInitialized, draw;
       graph.nodes[to].in.push(rid);
     }
     for (const obj of json.objects) {
-      if(obj.name.match(/^(cluster.*)|(%\d+)$/)) continue
+      if(obj.name.match(/^(cluster.*)|(%\d+)|(\?+)$/)) continue
       const props = {}
       props.name = obj.label && obj.label !== '\\N' ?
         obj.label :
@@ -46,7 +46,8 @@ let drawInitialized, draw;
       nids.set(obj._gvid, nid)
     }
     for (const edge of json.edges) {
-      addRel(edge.label||'', nids.get(edge.tail), nids.get(edge.head), {})
+      if (nids.has(edge.tail) && nids.has(edge.head))
+        addRel(edge.label||'', nids.get(edge.tail), nids.get(edge.head), {})
     }
 
     const name = json.name && json.name !== '%1' ?
