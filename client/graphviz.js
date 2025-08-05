@@ -15,6 +15,7 @@ let drawInitialized, draw;
   }
 
   function graphviz2aspect(json) {
+    function biggraph(json) {
     const graph = {
       nodes: [],
       rels: []
@@ -53,7 +54,31 @@ let drawInitialized, draw;
     const name = json.name && json.name !== '%1' ?
         json.name :
         'graphviz'
-    return [{name,graph,json}];
+    return {name,graph,json};
+    }
+
+    function aspectgraph(json, cluster) {
+      const graph = {
+        nodes: [],
+        rels: []
+      }
+      const nids = new Map()
+      function addNode(type, props={}){
+        const obj = {type, in:[], out:[], props};
+        graph.nodes.push(obj);
+        return graph.nodes.length-1
+      }
+      for (const gvid of cluster.nodes) {
+        const node = json.objects.find(obj => obj._gvid == gvid)
+        const props = {name:node.label}
+        const nid = addNode(node.type||'', props)
+        // nids.set(obj._gvid, nid)
+      }
+
+      return {name:cluster.name.slice(8), graph, cluster}
+    }
+    const clusters = json.objects.filter(obj => obj.name.startsWith('cluster'))
+    return [biggraph(json),...clusters.map(cluster => aspectgraph(json,cluster))]
   }
 
   function expand(text) {
