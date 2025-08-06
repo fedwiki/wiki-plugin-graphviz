@@ -68,13 +68,25 @@ let drawInitialized, draw;
         graph.nodes.push(obj);
         return graph.nodes.length-1
       }
+      function addRel(type, from, to, props={}) {
+        if (from == null || to == null) return null
+        const obj = {type, from, to, props};
+        graph.rels.push(obj);
+        const rid = graph.rels.length-1;
+        graph.nodes[from].out.push(rid)
+        graph.nodes[to].in.push(rid);
+      }
       for (const gvid of cluster.nodes) {
         const node = json.objects.find(obj => obj._gvid == gvid)
         const props = {name:node.label}
         const nid = addNode(node.type||'', props)
-        // nids.set(obj._gvid, nid)
+        nids.set(node._gvid, nid)
       }
-
+      for (const gvid of cluster.edges||[]) {
+        const edge = json.edges.find(obj => obj._gvid == gvid)
+          if (nids.has(edge.tail) && nids.has(edge.head))
+            addRel(edge.label||'', nids.get(edge.tail), nids.get(edge.head), {})
+      }
       return {name:cluster.name.slice(8), graph, cluster}
     }
     const clusters = json.objects.filter(obj => obj.name.startsWith('cluster'))
