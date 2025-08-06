@@ -87,6 +87,19 @@ let drawInitialized, draw;
           if (nids.has(edge.tail) && nids.has(edge.head))
             addRel(edge.label||'', nids.get(edge.tail), nids.get(edge.head), {})
       }
+      const mygvids = new Set(nids.keys())
+      for (const edge of json.edges) {
+        if(mygvids.has(edge.tail) && !mygvids.has(edge.head)) {
+          if(!nids.has(edge.head)) {
+            const gvid = edge.head
+            const node = json.objects.find(obj => obj._gvid == gvid)
+            const props = {name:node.label,color:'white'}
+            const nid = addNode(node.type||'', props)
+            nids.set(node._gvid, nid)
+          }
+        }
+        addRel(edge.label||'', nids.get(edge.tail), nids.get(edge.head), {})
+      }
       return {name:cluster.name.slice(8), graph, cluster}
     }
     const clusters = json.objects.filter(obj => obj.name.startsWith('cluster'))
