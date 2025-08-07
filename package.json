@@ -29,7 +29,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/fedwiki/wiki-plugin-graphviz.git"
+    "url": "git+https://github.com/fedwiki/wiki-plugin-graphviz.git"
   },
   "bugs": {
     "url": "https://github.com/fedwiki/wiki-plugin-graphviz/issues"
