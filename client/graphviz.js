@@ -46,7 +46,7 @@ let drawInitialized, draw;
       const nid = addNode(obj.type||'', props)
       nids.set(obj._gvid, nid)
     }
-    for (const edge of json.edges) {
+    for (const edge of json.edges||[]) {
       if (nids.has(edge.tail) && nids.has(edge.head))
         addRel(edge.label||'', nids.get(edge.tail), nids.get(edge.head), {})
     }
@@ -88,7 +88,7 @@ let drawInitialized, draw;
             addRel(edge.label||'', nids.get(edge.tail), nids.get(edge.head), {})
       }
       const mygvids = new Set(nids.keys())
-      for (const edge of json.edges) {
+      for (const edge of json.edges||[]) {
         if(mygvids.has(edge.tail) && !mygvids.has(edge.head)) {
           if(!nids.has(edge.head)) {
             const gvid = edge.head
