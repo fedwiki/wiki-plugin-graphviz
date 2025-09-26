@@ -35,7 +35,7 @@ let drawInitialized, draw;
       graph.nodes[from].out.push(rid)
       graph.nodes[to].in.push(rid);
     }
-    for (const obj of json.objects) {
+    for (const obj of json.objects||[]) {
       if(obj.name.match(/^(cluster.*)|(%\d+)|(\?+)$/)) continue
       const props = {}
       props.name = obj.label && obj.label !== '\\N' ?
@@ -76,8 +76,8 @@ let drawInitialized, draw;
         graph.nodes[from].out.push(rid)
         graph.nodes[to].in.push(rid);
       }
-      for (const gvid of cluster.nodes) {
-        const node = json.objects.find(obj => obj._gvid == gvid)
+      for (const gvid of cluster.nodes||[]) {
+        const node = (json.objects||[]).find(obj => obj._gvid == gvid)
         const props = {name:node.label}
         const nid = addNode(node.type||'', props)
         nids.set(node._gvid, nid)
@@ -92,7 +92,7 @@ let drawInitialized, draw;
         if(mygvids.has(edge.tail) && !mygvids.has(edge.head)) {
           if(!nids.has(edge.head)) {
             const gvid = edge.head
-            const node = json.objects.find(obj => obj._gvid == gvid)
+            const node = (json.objects||[]).find(obj => obj._gvid == gvid)
             const props = {name:node.label,color:'white'}
             const nid = addNode(node.type||'', props)
             nids.set(node._gvid, nid)
@@ -102,7 +102,7 @@ let drawInitialized, draw;
       }
       return {name:cluster.name.slice(8), graph, cluster}
     }
-    const clusters = json.objects.filter(obj => obj.name.startsWith('cluster'))
+    const clusters = (json.objects||[]).filter(obj => obj.name.startsWith('cluster'))
     return [biggraph(json),...clusters.map(cluster => aspectgraph(json,cluster))]
   }
 
