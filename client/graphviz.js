@@ -2,9 +2,9 @@ let drawInitialized, draw;
 
 (function() {
   async function initializeDraw() {
-    const {instance} = await import('./viz@3.9.0/viz-standalone.mjs');
+    await import('./viz@3.22.0/viz-global.js'); // side effect creates global Viz object
     draw = async function draw(dot) {
-      const viz = await instance();
+      const viz = await Viz.instance();
       const svg = viz.renderSVGElement(dot);
       svg.aspectData = () => graphviz2aspect(viz.renderJSON(dot));
       svg.style.maxWidth = "100%";
