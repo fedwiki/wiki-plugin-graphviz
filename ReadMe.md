@@ -17,8 +17,8 @@ This plugin, type: graphviz, extends the markup of the federated wiki.
 
     # build the plugin into an NPM package
     cd $PLUGDIR
-    npm version prerelease --preid=wip --force --no-git-tag-version
-    PKG=$(npm pack -1)
+    npm version patch --force --no-git-tag-version
+    PKG=$(npm pack | tail -1)
     mv $PKG $WIKIDIR
 
     # install the plugin into a local copy of wiki
@@ -26,9 +26,9 @@ This plugin, type: graphviz, extends the markup of the federated wiki.
     npm install $PKG
 
     # run wiki
-    node index.js --data ./data --security_legacy
+    node index.js --farm --data ./data --security_type=friends
 
-    # visit http://localhost:3000 to test the plugin revisions
+    # visit http://test.localhost:3000 to test the plugin revisions
 
 ## Release workflow
 
