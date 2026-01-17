@@ -2,9 +2,9 @@ let drawInitialized, draw;
 
 (function() {
   async function initializeDraw() {
-    const {instance} = await import('./viz@3.9.0/viz-standalone.mjs');
-    const viz = await instance();
-    draw = function draw(dot) {
+    await import('./viz@3.22.0/viz-global.js'); // side effect creates global Viz object
+    draw = async function draw(dot) {
+      const viz = await Viz.instance();
       const svg = viz.renderSVGElement(dot);
       svg.aspectData = () => graphviz2aspect(viz.renderJSON(dot));
       svg.style.maxWidth = "100%";
@@ -558,7 +558,7 @@ ${item.dot??''}`
 <div class="diagram"></class>`)
       let $diagram = $item.find('.diagram')
       let diagram = $diagram.get(0)
-      const svg = draw(dot)
+      const svg = await draw(dot)
       item.dot = dot
       item.svg = svg.outerHTML
       function click(event) {
