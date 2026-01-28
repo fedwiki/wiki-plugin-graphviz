@@ -36,7 +36,7 @@ let drawInitialized, draw;
       graph.nodes[to].in.push(rid);
     }
     for (const obj of json.objects||[]) {
-      if(obj.name.match(/^(cluster.*)|(%\d+)|(\?+)$/)) continue
+      if(obj.name.match(/(^cluster.*$)|(^%\d+$)|(^\?+$)/)) continue
       const props = {}
       props.name = obj.label && obj.label !== '\\N' ?
         obj.label :
