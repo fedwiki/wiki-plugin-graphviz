@@ -1,5 +1,4 @@
 // build time tests for graphviz plugin
-// see http://mochajs.org/
 
 (function () {
   const graphviz = require("../client/graphviz"),
