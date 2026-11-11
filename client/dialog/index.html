@@ -32,9 +32,15 @@
         }
       }
 
-      window.addEventListener(
-        "message",
-        (event) => {
+      try {
+        if (window.opener.origin == window.location.origin) {
+          window.addEventListener("message", acceptAndEnrichSVG)
+        }
+      } catch (error) {
+        // intentionally blank
+      }
+
+      function acceptAndEnrichSVG(event) {
           const { svg, pageKey, context } = event.data
           if (!svg) {
             return; // ignore unexpected messages
@@ -47,7 +53,7 @@
 
           svgCanvas = document.querySelector('svg');
           viewPort = document.querySelector('g')
-                    
+
           svgCanvas.addEventListener('click', click)
 
           var drag = false;
@@ -88,7 +94,7 @@
                 pt.y = y
                 pt = pt.matrixTransform(viewPort.getScreenCTM().inverse())
                 return { x: pt.x, y: pt.y }
-              } 
+              }
 
               var zoom = event.deltaY > 0 ? -1 : 1;
               var scale = 1 + factor * zoom;
@@ -102,8 +108,7 @@
               transform.setMatrix(matrix)
               viewPort.transform.baseVal.initialize(transform)
           });
-        }
-      )
+      }
 
     </script>
   </head>
